@@ -1,5 +1,5 @@
 <template>
-  <People :context="context" v-if="context"/>
+  <People :context="context" :peopleId="peopleId" v-if="context" />
 </template>
 
 <script>
@@ -12,10 +12,12 @@ export default {
 
   data() {
     return {
-      context: 'employee'
+      context: 'employee',
+      peopleId:null
     };
   },
   created() {
+    this.peopleId = decodeURIComponent(this.$route.params.id);
    },
 };
 </script>
