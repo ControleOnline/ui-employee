@@ -1,7 +1,7 @@
 export const routes = [
   {
     path: '/employee/',
-    component: () =>  import ('@controleonline/ui-layout/src/layouts/AdminLayout.vue'),
+    component: () =>  import ('@controleonline/ui-layout/src/vue/layouts/AdminLayout.vue'),
     children: [
       {
         name: 'EmployeeIndex',
