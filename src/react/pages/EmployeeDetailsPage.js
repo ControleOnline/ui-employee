@@ -118,6 +118,8 @@ const InputField = ({
 
 const TabButton = ({active, label, onPress, styles}) => (
   <TouchableOpacity
+    accessibilityRole="button"
+    accessibilityLabel={label}
     activeOpacity={0.9}
     style={[styles.tabButton, active ? styles.tabButtonActive : null]}
     onPress={onPress}
@@ -775,6 +777,8 @@ const EmployeeDetailsPage = () => {
 
             <View style={styles.actionRow}>
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Recarregar"
                 activeOpacity={0.9}
                 style={styles.secondaryButton}
                 onPress={loadEmployeeProfile}
@@ -783,6 +787,8 @@ const EmployeeDetailsPage = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel={profilesLoading ? 'Salvando perfil' : 'Salvar perfil'}
                 activeOpacity={0.9}
                 style={styles.primaryButton}
                 onPress={handleProfileSave}
@@ -913,6 +919,8 @@ const EmployeeDetailsPage = () => {
 
             <View style={styles.actionRow}>
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel={exportJobsLoading ? 'Gerando folha' : 'Gerar folha'}
                 activeOpacity={0.9}
                 style={styles.primaryButton}
                 disabled={exportJobsLoading}
