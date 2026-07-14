@@ -2,6 +2,11 @@ import Formatter from '@controleonline/ui-common/src/utils/formatter.js';
 
 export const DEFAULT_EMPLOYEE_CONTEXT = 'employment';
 export const DEFAULT_EMPLOYEE_EXPORT_KIND = 'timesheet';
+export const EMPLOYEE_CATEGORY_CONTEXTS = {
+  job: 'employment-job',
+  function: 'employment-function',
+  department: 'employment-department',
+};
 
 const normalizeText = value => String(value ?? '').trim();
 
@@ -46,6 +51,11 @@ export const resolvePeopleLinkIri = value => {
   return id ? `/people_links/${id}` : '';
 };
 
+export const resolveCategoryIri = value => {
+  const id = resolveEntityId(value);
+  return id ? `/categories/${id}` : '';
+};
+
 export const resolvePeopleLabel = people => buildPeopleLabel(people) || '-';
 
 export const resolveCompanyLabel = company => resolvePeopleLabel(company);
@@ -85,6 +95,17 @@ export const formatContextLabel = value => {
     employment: 'RH',
     building_access: 'Acesso predial',
     procedure: 'Procedimento',
+  };
+
+  return map[normalized] || normalizeText(value) || '-';
+};
+
+export const formatEmployeeCategoryContextLabel = value => {
+  const normalized = normalizeText(value).toLowerCase();
+  const map = {
+    [EMPLOYEE_CATEGORY_CONTEXTS.job]: 'Cargo',
+    [EMPLOYEE_CATEGORY_CONTEXTS.function]: 'Funcao',
+    [EMPLOYEE_CATEGORY_CONTEXTS.department]: 'Departamento',
   };
 
   return map[normalized] || normalizeText(value) || '-';
