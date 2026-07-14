@@ -4,6 +4,9 @@ import People from '@controleonline/ui-people/src/react/pages/People';
 import {
   DEFAULT_EMPLOYEE_CONTEXT,
 } from '@controleonline/ui-employee/src/shared/employeeFormats';
+import {
+  buildEmployeeDetailRouteParams,
+} from '@controleonline/ui-employee/src/shared/employeeNavigation';
 
 const buildEmployeesContext = routeParams => ({
   context: DEFAULT_EMPLOYEE_CONTEXT,
@@ -20,10 +23,11 @@ const buildEmployeesContext = routeParams => ({
     global.t?.t('people', 'title', 'newEmployee') ||
     'Cadastro de funcionario',
   detailsRouteName: 'EmployeeDetailsPage',
-  detailsRouteParams: employee => ({
-    id: String(employee?.id || employee?.['@id'] || '').replace(/\D+/g, ''),
-    context: DEFAULT_EMPLOYEE_CONTEXT,
-  }),
+  detailsRouteParams: employee => buildEmployeeDetailRouteParams(
+    employee,
+    'data',
+    DEFAULT_EMPLOYEE_CONTEXT,
+  ),
 });
 
 const EmployeesPage = ({route}) => {

@@ -126,6 +126,34 @@ export const createStyles = palette =>
       lineHeight: 18,
       marginBottom: 12,
     },
+    controlsRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    sectionChipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: 8,
+    },
+    sectionChip: {
+      alignItems: 'center',
+      backgroundColor: palette.buttonBackground || '#EFF6FF',
+      borderColor: palette.buttonBorder || '#BFDBFE',
+      borderRadius: 999,
+      borderWidth: 1,
+      marginBottom: 8,
+      marginRight: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+    },
+    sectionChipText: {
+      color: palette.buttonText || '#1D4ED8',
+      fontSize: 12,
+      fontWeight: '600',
+    },
     infoGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -240,6 +268,48 @@ export const createStyles = palette =>
     },
     tableWrap: {
       marginTop: 12,
+    },
+    modalOverlay: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      padding: 16,
+    },
+    modalCard: {
+      backgroundColor: palette.cardBackground || '#FFFFFF',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 20,
+      borderWidth: 1,
+      maxHeight: '90%',
+      maxWidth: 680,
+      padding: 16,
+      width: '100%',
+      ...(Platform.OS === 'web' && palette.shadow
+        ? {boxShadow: `0 10px 24px ${palette.shadow}`}
+        : {}),
+    },
+    modalHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    modalTitle: {
+      color: palette.text || '#0F172A',
+      fontSize: 18,
+      fontWeight: '700',
+      flexShrink: 1,
+      paddingRight: 12,
+    },
+    modalCloseButton: {
+      alignItems: 'center',
+      backgroundColor: palette.cardBackground || '#FFFFFF',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 16,
+      borderWidth: 1,
+      height: 32,
+      justifyContent: 'center',
+      width: 32,
     },
     emptyState: {
       alignItems: 'center',

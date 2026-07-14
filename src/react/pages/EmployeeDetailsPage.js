@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {app_type} from '@appType';
 import {useMessage} from '@controleonline/ui-common/src/react/components/MessageService';
 import {getPeopleDisplayName} from '@controleonline/ui-common/src/react/utils/peopleDisplay';
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
@@ -21,6 +22,7 @@ import DateShortcutFilter from '@controleonline/ui-default/src/react/components/
 import {useStore} from '@store';
 import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
 import {colors} from '@controleonline/../../src/styles/colors';
+import EmployeeAttendanceSection from '@controleonline/ui-employee/src/react/components/EmployeeAttendanceSection';
 import {
   DEFAULT_EMPLOYEE_CONTEXT,
   DEFAULT_EMPLOYEE_EXPORT_KIND,
@@ -35,16 +37,27 @@ import {
 } from '@controleonline/ui-employee/src/shared/employeeFormats';
 import {createStyles} from './EmployeeDetailsPage.styles';
 
+const resolvedAppType = String(app_type || '').trim().toUpperCase();
+const canSeeAttendanceTab = resolvedAppType === 'ADMIN' || resolvedAppType === 'MANAGER';
+
 const TAB_DEFINITIONS = [
   {key: 'data', label: 'Dados'},
   {key: 'profile', label: 'Cargo e funcao'},
   {key: 'contracts', label: 'Contrato'},
   {key: 'movements', label: 'Movimentos'},
+  ...(canSeeAttendanceTab ? [{key: 'attendance', label: 'Ponto'}] : []),
   {key: 'schedules', label: 'Agendas'},
   {key: 'exports', label: 'Exportacao'},
 ];
 
 const normalizeText = value => String(value ?? '').trim();
+
+const resolveInitialTab = value => {
+  const normalized = normalizeText(value).toLowerCase();
+  const availableTabs = new Set(TAB_DEFINITIONS.map(tab => tab.key));
+
+  return availableTabs.has(normalized) ? normalized : 'data';
+};
 
 const buildProfileDraft = (profile = null, employeeLink = null) => {
   const snapshot = normalizePeopleSnapshot(profile?.linkedinSnapshot);
@@ -191,7 +204,7 @@ const EmployeeDetailsPage = () => {
   );
   const styles = useMemo(() => createStyles(brandColors), [brandColors]);
 
-  const [activeTab, setActiveTab] = useState('data');
+  const [activeTab, setActiveTab] = useState(() => resolveInitialTab(route?.params?.tab));
   const [employeeLink, setEmployeeLink] = useState(null);
   const [profileDraft, setProfileDraft] = useState(() => buildProfileDraft());
   const [exportPeriod, setExportPeriod] = useState({
@@ -333,6 +346,10 @@ const EmployeeDetailsPage = () => {
   useEffect(() => {
     loadEmployeeBase();
   }, [loadEmployeeBase]);
+
+  useEffect(() => {
+    setActiveTab(resolveInitialTab(route?.params?.tab));
+  }, [route?.params?.tab]);
 
   useEffect(() => {
     if (!employeeLink?.id) {
@@ -859,6 +876,15 @@ const EmployeeDetailsPage = () => {
               />
             </View>
           </View>
+        ) : null}
+
+        {activeTab === 'attendance' ? (
+          <EmployeeAttendanceSection
+            currentCompany={currentCompany}
+            employeeId={employeeId}
+            context={activeContext}
+            styles={styles}
+          />
         ) : null}
 
         {activeTab === 'schedules' ? (

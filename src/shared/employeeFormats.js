@@ -137,6 +137,65 @@ export const formatKindLabel = value => {
   return normalizeText(value) || '-';
 };
 
+const padDurationComponent = value => String(Math.abs(Number(value) || 0)).padStart(2, '0');
+
+export const formatDurationMinutes = value => {
+  if (value === null || value === undefined || value === '') {
+    return '-';
+  }
+
+  const numericValue = Math.max(0, Number(value) || 0);
+  const hours = Math.floor(numericValue / 60);
+  const minutes = numericValue % 60;
+
+  return `${padDurationComponent(hours)}:${padDurationComponent(minutes)}`;
+};
+
+export const formatSignedDurationMinutes = value => {
+  if (value === null || value === undefined || value === '') {
+    return '-';
+  }
+
+  const numericValue = Number(value) || 0;
+  const label = formatDurationMinutes(Math.abs(numericValue));
+  if (numericValue > 0) {
+    return `+${label}`;
+  }
+
+  if (numericValue < 0) {
+    return `-${label}`;
+  }
+
+  return label;
+};
+
+export const formatAttendanceStatusLabel = value => {
+  const normalized = normalizeText(value).toLowerCase();
+  const map = {
+    absent: 'Falta',
+    absent_justified: 'Falta justificada',
+    late: 'Atraso',
+    late_overtime: 'Atraso e hora extra',
+    overtime: 'Hora extra',
+    present: 'Em dia',
+    unplanned: 'Sem escala',
+  };
+
+  return map[normalized] || normalizeText(value) || '-';
+};
+
+export const formatAttendanceToneLabel = value => {
+  const normalized = normalizeText(value).toLowerCase();
+  const map = {
+    danger: 'Alerta',
+    info: 'Informacao',
+    success: 'Ok',
+    warning: 'Atencao',
+  };
+
+  return map[normalized] || normalizeText(value) || '-';
+};
+
 export const buildScheduleWindowLabel = schedule => {
   if (!schedule || typeof schedule !== 'object') {
     return '-';
