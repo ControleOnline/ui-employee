@@ -68,13 +68,14 @@ const buildProfileDraft = (profile = null, employeeLink = null) => {
   return {
     id: profile?.id ? String(profile.id) : '',
     peopleLink: employeeLink?.id ? resolvePeopleLinkIri(employeeLink) : '',
-    jobTitle: profile?.jobTitleLabel || profile?.jobTitle || '',
-    jobTitleCategory: resolveCategoryIri(profile?.jobTitleCategory),
-    jobFunction: profile?.jobFunctionLabel || profile?.jobFunction || '',
-    jobFunctionCategory: resolveCategoryIri(profile?.jobFunctionCategory),
-    department: profile?.departmentLabel || profile?.department || '',
-    departmentCategory: resolveCategoryIri(profile?.departmentCategory),
-    employmentType: profile?.employmentType || '',
+    jobTitle: resolveCategoryIri(profile?.jobTitle),
+    jobTitleLabel: profile?.jobTitleLabel || profile?.jobTitle?.name || '',
+    jobFunction: resolveCategoryIri(profile?.jobFunction),
+    jobFunctionLabel: profile?.jobFunctionLabel || profile?.jobFunction?.name || '',
+    department: resolveCategoryIri(profile?.department),
+    departmentLabel: profile?.departmentLabel || profile?.department?.name || '',
+    employmentType: resolveCategoryIri(profile?.employmentType),
+    employmentTypeLabel: profile?.employmentTypeLabel || profile?.employmentType?.name || '',
     workloadHours:
       profile?.workloadHours !== null && profile?.workloadHours !== undefined
         ? String(profile.workloadHours)
@@ -187,7 +188,7 @@ const EmployeeDetailsPage = () => {
   const peopleActions = peopleStore.actions;
   const peopleLinkActions = peopleLinkStore.actions;
   const contractActions = contractStore.actions;
-  const categoryActions = categoriesStore.actions;
+  const categoriesActions = categoriesStore.actions;
   const employeeProfilesActions = employeeProfilesStore.actions;
   const accessEventsActions = accessEventsStore.actions;
   const schedulesActions = schedulesStore.actions;
@@ -215,9 +216,10 @@ const EmployeeDetailsPage = () => {
   const [activeTab, setActiveTab] = useState(() => resolveInitialTab(route?.params?.tab));
   const [employeeLink, setEmployeeLink] = useState(null);
   const [profileDraft, setProfileDraft] = useState(() => buildProfileDraft());
-  const [jobCategoryOptions, setJobCategoryOptions] = useState([]);
-  const [functionCategoryOptions, setFunctionCategoryOptions] = useState([]);
-  const [departmentCategoryOptions, setDepartmentCategoryOptions] = useState([]);
+  const [jobTitleOptions, setJobTitleOptions] = useState([]);
+  const [jobFunctionOptions, setJobFunctionOptions] = useState([]);
+  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [employmentTypeOptions, setEmploymentTypeOptions] = useState([]);
   const [categoriesReady, setCategoriesReady] = useState(false);
   const [exportPeriod, setExportPeriod] = useState({
     customRange: {from: '', to: ''},
@@ -278,49 +280,64 @@ const EmployeeDetailsPage = () => {
     }
   }, [employeeLink, employeeProfilesActions, showError]);
 
-  const loadEmployeeCategoryOptions = useCallback(async () => {
+  const loadEmployeeProfileOptions = useCallback(async () => {
     if (!currentCompany?.id) {
-      setJobCategoryOptions([]);
-      setFunctionCategoryOptions([]);
-      setDepartmentCategoryOptions([]);
+      setJobTitleOptions([]);
+      setJobFunctionOptions([]);
+      setDepartmentOptions([]);
+      setEmploymentTypeOptions([]);
       return;
     }
 
     try {
-      const [jobCategories, functionCategories, departmentCategories] = await Promise.all([
-        categoryActions.getItems({
+      const [
+        jobCategories,
+        functionCategories,
+        departmentCategories,
+        employmentTypeCategories,
+      ] = await Promise.all([
+        categoriesActions.getItems({
           company: currentCompany.id,
           context: EMPLOYEE_CATEGORY_CONTEXTS.job,
           itemsPerPage: 200,
           page: 1,
           'order[name]': 'ASC',
         }),
-        categoryActions.getItems({
+        categoriesActions.getItems({
           company: currentCompany.id,
           context: EMPLOYEE_CATEGORY_CONTEXTS.function,
           itemsPerPage: 200,
           page: 1,
           'order[name]': 'ASC',
         }),
-        categoryActions.getItems({
+        categoriesActions.getItems({
           company: currentCompany.id,
           context: EMPLOYEE_CATEGORY_CONTEXTS.department,
           itemsPerPage: 200,
           page: 1,
           'order[name]': 'ASC',
         }),
+        categoriesActions.getItems({
+          company: currentCompany.id,
+          context: EMPLOYEE_CATEGORY_CONTEXTS.employmentType,
+          itemsPerPage: 200,
+          page: 1,
+          'order[name]': 'ASC',
+        }),
       ]);
 
-      setJobCategoryOptions(Array.isArray(jobCategories) ? jobCategories : []);
-      setFunctionCategoryOptions(Array.isArray(functionCategories) ? functionCategories : []);
-      setDepartmentCategoryOptions(Array.isArray(departmentCategories) ? departmentCategories : []);
+      setJobTitleOptions(Array.isArray(jobCategories) ? jobCategories : []);
+      setJobFunctionOptions(Array.isArray(functionCategories) ? functionCategories : []);
+      setDepartmentOptions(Array.isArray(departmentCategories) ? departmentCategories : []);
+      setEmploymentTypeOptions(Array.isArray(employmentTypeCategories) ? employmentTypeCategories : []);
     } catch (error) {
       showError?.(error?.message || 'Nao foi possivel carregar as categorias do funcionario.');
-      setJobCategoryOptions([]);
-      setFunctionCategoryOptions([]);
-      setDepartmentCategoryOptions([]);
+      setJobTitleOptions([]);
+      setJobFunctionOptions([]);
+      setDepartmentOptions([]);
+      setEmploymentTypeOptions([]);
     }
-  }, [categoryActions, currentCompany?.id, showError]);
+  }, [categoriesActions, currentCompany?.id, showError]);
 
   const loadContracts = useCallback(async () => {
     if (!employeeId || !currentCompany?.id) {
@@ -406,10 +423,10 @@ const EmployeeDetailsPage = () => {
 
   useEffect(() => {
     setCategoriesReady(false);
-    loadEmployeeCategoryOptions().finally(() => {
+    loadEmployeeProfileOptions().finally(() => {
       setCategoriesReady(true);
     });
-  }, [loadEmployeeCategoryOptions]);
+  }, [loadEmployeeProfileOptions]);
 
   useEffect(() => {
     setActiveTab(resolveInitialTab(route?.params?.tab));
@@ -480,7 +497,7 @@ const EmployeeDetailsPage = () => {
     }));
   }, []);
 
-  const handleCategoryChange = useCallback((field, labelField, value, option) => {
+  const handleSelectionChange = useCallback((field, labelField, value, option) => {
     setProfileDraft(currentDraft => ({
       ...currentDraft,
       [field]: value,
@@ -506,13 +523,10 @@ const EmployeeDetailsPage = () => {
       const payload = {
         id: profileDraft.id || undefined,
         peopleLink: profileDraft.peopleLink || resolvePeopleLinkIri(employeeLink),
-        jobTitleCategory: normalizeText(profileDraft.jobTitleCategory) || null,
-        jobFunctionCategory: normalizeText(profileDraft.jobFunctionCategory) || null,
-        departmentCategory: normalizeText(profileDraft.departmentCategory) || null,
-        jobTitle: normalizeText(profileDraft.jobTitle),
-        jobFunction: normalizeText(profileDraft.jobFunction),
-        department: normalizeText(profileDraft.department),
-        employmentType: normalizeText(profileDraft.employmentType),
+        jobTitle: normalizeText(profileDraft.jobTitle) || null,
+        jobFunction: normalizeText(profileDraft.jobFunction) || null,
+        department: normalizeText(profileDraft.department) || null,
+        employmentType: normalizeText(profileDraft.employmentType) || null,
         workloadHours: normalizeText(profileDraft.workloadHours)
           ? Number(profileDraft.workloadHours)
           : null,
@@ -538,13 +552,10 @@ const EmployeeDetailsPage = () => {
     loadEmployeeProfile,
     profileDraft.active,
     profileDraft.admissionDate,
-    profileDraft.departmentCategory,
     profileDraft.department,
     profileDraft.employmentType,
     profileDraft.id,
-    profileDraft.jobFunctionCategory,
     profileDraft.jobFunction,
-    profileDraft.jobTitleCategory,
     profileDraft.jobTitle,
     profileDraft.linkedinHeadline,
     profileDraft.linkedinSnapshotText,
@@ -721,10 +732,26 @@ const EmployeeDetailsPage = () => {
                 label="Demissao"
                 value={formatDateValue(profileDraft.terminationDate || employeeProfile?.terminationDate)}
               />
-              <FieldValue styles={styles} label="Cargo" value={employeeProfile?.jobTitleLabel || profileDraft.jobTitle} />
-              <FieldValue styles={styles} label="Funcao" value={employeeProfile?.jobFunctionLabel || profileDraft.jobFunction} />
-              <FieldValue styles={styles} label="Departamento" value={employeeProfile?.departmentLabel || profileDraft.department} />
-              <FieldValue styles={styles} label="Vinculo" value={employeeProfile?.employmentType || profileDraft.employmentType} />
+              <FieldValue
+                styles={styles}
+                label="Cargo"
+                value={employeeProfile?.jobTitleLabel || profileDraft.jobTitleLabel}
+              />
+              <FieldValue
+                styles={styles}
+                label="Funcao"
+                value={employeeProfile?.jobFunctionLabel || profileDraft.jobFunctionLabel}
+              />
+              <FieldValue
+                styles={styles}
+                label="Departamento"
+                value={employeeProfile?.departmentLabel || profileDraft.departmentLabel}
+              />
+              <FieldValue
+                styles={styles}
+                label="Vinculo"
+                value={employeeProfile?.employmentTypeLabel || profileDraft.employmentTypeLabel}
+              />
             </View>
 
             <View style={styles.snapshotBox}>
@@ -743,50 +770,52 @@ const EmployeeDetailsPage = () => {
             <SectionTitle
               styles={styles}
               title="Perfil do funcionario"
-              text="Aba especifica de RH com categorias de cargo, funcao, departamento e snapshot local do LinkedIn."
+              text="Aba especifica de RH com categorias de cargo, funcao, departamento, vinculo e snapshot local do LinkedIn."
             />
 
             <View style={styles.formGrid}>
               <View style={styles.formGridItem}>
                 <CategoryPickerField
                   label="Cargo"
-                  options={jobCategoryOptions}
+                  options={jobTitleOptions}
                   placeholder="Selecionar cargo"
-                  value={profileDraft.jobTitleCategory}
+                  value={profileDraft.jobTitle}
                   onChange={(value, option) =>
-                    handleCategoryChange('jobTitleCategory', 'jobTitle', value, option)
+                    handleSelectionChange('jobTitle', 'jobTitleLabel', value, option)
                   }
                 />
               </View>
               <View style={styles.formGridItem}>
                 <CategoryPickerField
                   label="Funcao"
-                  options={functionCategoryOptions}
+                  options={jobFunctionOptions}
                   placeholder="Selecionar funcao"
-                  value={profileDraft.jobFunctionCategory}
+                  value={profileDraft.jobFunction}
                   onChange={(value, option) =>
-                    handleCategoryChange('jobFunctionCategory', 'jobFunction', value, option)
+                    handleSelectionChange('jobFunction', 'jobFunctionLabel', value, option)
                   }
                 />
               </View>
               <View style={styles.formGridItem}>
                 <CategoryPickerField
                   label="Departamento"
-                  options={departmentCategoryOptions}
+                  options={departmentOptions}
                   placeholder="Selecionar departamento"
-                  value={profileDraft.departmentCategory}
+                  value={profileDraft.department}
                   onChange={(value, option) =>
-                    handleCategoryChange('departmentCategory', 'department', value, option)
+                    handleSelectionChange('department', 'departmentLabel', value, option)
                   }
                 />
               </View>
               <View style={styles.formGridItem}>
-                <InputField
-                  styles={styles}
+                <CategoryPickerField
                   label="Vinculo"
+                  options={employmentTypeOptions}
+                  placeholder="Selecionar vinculo"
                   value={profileDraft.employmentType}
-                  onChangeText={value => handleProfileChange('employmentType', value)}
-                  placeholder="CLT / PJ / Estagio"
+                  onChange={(value, option) =>
+                    handleSelectionChange('employmentType', 'employmentTypeLabel', value, option)
+                  }
                 />
               </View>
               <View style={styles.formGridItem}>

@@ -42,13 +42,13 @@ const RhFunctionsPage = () => {
 
   return (
     <RhTablePage
-      description="Cadastro de cargos, funcoes e snapshots locais do LinkedIn por colaborador."
+      description="Cadastro de cargos, funcoes, departamentos e vinculos por colaborador."
       onRowPress={handleRowPress}
       searchProps={{
         placeholder: 'Buscar cargo',
       }}
       requestParams={requestParams}
-      searchKey="jobTitle"
+      searchKey="jobTitle.name"
       searchPlaceholder="Buscar cargo"
       storeName="employee_profiles"
       title="Cargos e funcoes"

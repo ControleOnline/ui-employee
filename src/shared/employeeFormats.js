@@ -6,6 +6,7 @@ export const EMPLOYEE_CATEGORY_CONTEXTS = {
   job: 'employment-job',
   function: 'employment-function',
   department: 'employment-department',
+  employmentType: 'employment-type',
 };
 
 const normalizeText = value => String(value ?? '').trim();
@@ -106,6 +107,7 @@ export const formatEmployeeCategoryContextLabel = value => {
     [EMPLOYEE_CATEGORY_CONTEXTS.job]: 'Cargo',
     [EMPLOYEE_CATEGORY_CONTEXTS.function]: 'Funcao',
     [EMPLOYEE_CATEGORY_CONTEXTS.department]: 'Departamento',
+    [EMPLOYEE_CATEGORY_CONTEXTS.employmentType]: 'Vinculo',
   };
 
   return map[normalized] || normalizeText(value) || '-';

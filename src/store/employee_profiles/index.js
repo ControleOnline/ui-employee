@@ -4,8 +4,35 @@ import mutations from '@controleonline/ui-default/src/store/default/mutations';
 import {
   formatBooleanLabel,
   formatDateValue,
+  EMPLOYEE_CATEGORY_CONTEXTS,
   resolvePeopleLabel,
 } from '@controleonline/ui-employee/src/shared/employeeFormats';
+
+const buildCategoryColumn = ({name, label, context}) => ({
+  editable: true,
+  sortable: true,
+  name,
+  align: 'left',
+  label,
+  list: 'categories/getItems',
+  listRequestParams: ({currentCompanyId}) => ({
+    ...(currentCompanyId ? {company: currentCompanyId} : {}),
+    context,
+    'order[name]': 'ASC',
+  }),
+  searchParam: 'name',
+  sortField: `${name}.name`,
+  format: (value, _column, row) =>
+    value?.name ||
+    row?.[`${name}Label`] ||
+    (typeof value === 'string' ? value : '') ||
+    '-',
+  formatList: item => ({
+    value: item?.id,
+    label: item?.name,
+  }),
+  saveFormat: value => (value ? `/categories/${parseInt(value.value || value, 10)}` : null),
+});
 
 export default {
   namespaced: true,
@@ -52,34 +79,42 @@ export default {
       {
         editable: true,
         sortable: true,
-        name: 'jobTitle',
-        align: 'left',
         label: 'Cargo',
-        format: value => value || '-',
+        ...buildCategoryColumn({
+          context: EMPLOYEE_CATEGORY_CONTEXTS.job,
+          label: 'Cargo',
+          name: 'jobTitle',
+        }),
       },
       {
         editable: true,
         sortable: true,
-        name: 'jobFunction',
-        align: 'left',
         label: 'Funcao',
-        format: value => value || '-',
+        ...buildCategoryColumn({
+          context: EMPLOYEE_CATEGORY_CONTEXTS.function,
+          label: 'Funcao',
+          name: 'jobFunction',
+        }),
       },
       {
         editable: true,
         sortable: true,
-        name: 'department',
-        align: 'left',
         label: 'Departamento',
-        format: value => value || '-',
+        ...buildCategoryColumn({
+          context: EMPLOYEE_CATEGORY_CONTEXTS.department,
+          label: 'Departamento',
+          name: 'department',
+        }),
       },
       {
         editable: true,
         sortable: true,
-        name: 'employmentType',
-        align: 'left',
         label: 'Vinculo',
-        format: value => value || '-',
+        ...buildCategoryColumn({
+          context: EMPLOYEE_CATEGORY_CONTEXTS.employmentType,
+          label: 'Vinculo',
+          name: 'employmentType',
+        }),
       },
       {
         editable: true,
