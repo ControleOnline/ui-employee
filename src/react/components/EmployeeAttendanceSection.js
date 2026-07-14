@@ -410,7 +410,7 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
             isLoading={attendanceLoading}
             requestParams={attendanceRequestParams}
             rowStyle={attendanceRowStyle}
-            showColumnFiltersButton
+            showColumnFiltersButton={false}
             showRowActions={false}
             storeName="attendance_reports"
             totalItems={attendanceRows.length}
