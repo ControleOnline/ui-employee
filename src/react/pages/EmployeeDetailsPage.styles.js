@@ -1,0 +1,261 @@
+import {Platform, StyleSheet} from 'react-native';
+
+export const createStyles = palette =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: palette.background || '#F8FAFC',
+    },
+    loadingContainer: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      padding: 24,
+    },
+    scrollContent: {
+      padding: 16,
+      paddingBottom: 40,
+    },
+    headerCard: {
+      backgroundColor: palette.cardBackground || '#FFFFFF',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 20,
+      borderWidth: 1,
+      marginBottom: 16,
+      padding: 16,
+      ...(Platform.OS === 'web' && palette.shadow
+        ? {boxShadow: `0 10px 24px ${palette.shadow}`}
+        : {}),
+    },
+    headerRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      marginBottom: 12,
+    },
+    headerAvatar: {
+      alignItems: 'center',
+      backgroundColor: palette.primary || '#2563EB',
+      borderRadius: 18,
+      height: 36,
+      justifyContent: 'center',
+      marginRight: 12,
+      width: 36,
+    },
+    headerAvatarText: {
+      color: palette.buttonText || '#FFFFFF',
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    headerTitle: {
+      color: palette.text || '#0F172A',
+      fontSize: 22,
+      fontWeight: '700',
+    },
+    headerSubtitle: {
+      color: palette.textSecondary || '#64748B',
+      fontSize: 13,
+      marginTop: 2,
+    },
+    headerPillRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    headerPill: {
+      alignItems: 'center',
+      backgroundColor: palette.buttonBackground || '#EFF6FF',
+      borderColor: palette.buttonBorder || '#BFDBFE',
+      borderRadius: 999,
+      borderWidth: 1,
+      marginRight: 8,
+      marginTop: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+    },
+    headerPillText: {
+      color: palette.buttonText || '#1D4ED8',
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    tabBar: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: 16,
+    },
+    tabButton: {
+      backgroundColor: palette.cardBackground || '#FFFFFF',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 999,
+      borderWidth: 1,
+      marginBottom: 8,
+      marginRight: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+    },
+    tabButtonActive: {
+      backgroundColor: palette.primary || '#2563EB',
+      borderColor: palette.primary || '#2563EB',
+    },
+    tabButtonText: {
+      color: palette.text || '#0F172A',
+      fontSize: 13,
+      fontWeight: '600',
+    },
+    tabButtonTextActive: {
+      color: palette.buttonText || '#FFFFFF',
+    },
+    sectionCard: {
+      backgroundColor: palette.cardBackground || '#FFFFFF',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 20,
+      borderWidth: 1,
+      marginBottom: 16,
+      padding: 16,
+      ...(Platform.OS === 'web' && palette.shadow
+        ? {boxShadow: `0 10px 24px ${palette.shadow}`}
+        : {}),
+    },
+    sectionTitle: {
+      color: palette.text || '#0F172A',
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: 4,
+    },
+    sectionText: {
+      color: palette.textSecondary || '#64748B',
+      fontSize: 13,
+      lineHeight: 18,
+      marginBottom: 12,
+    },
+    infoGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginHorizontal: -6,
+    },
+    infoItem: {
+      paddingHorizontal: 6,
+      width: '50%',
+      marginBottom: 12,
+    },
+    infoLabel: {
+      color: palette.textSecondary || '#64748B',
+      fontSize: 12,
+      marginBottom: 4,
+      textTransform: 'uppercase',
+    },
+    infoValue: {
+      color: palette.text || '#0F172A',
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    snapshotBox: {
+      backgroundColor: palette.surface || '#F8FAFC',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 16,
+      borderWidth: 1,
+      marginTop: 12,
+      padding: 12,
+    },
+    snapshotText: {
+      color: palette.text || '#0F172A',
+      fontFamily: Platform.OS === 'web' ? 'monospace' : undefined,
+      fontSize: 12,
+      lineHeight: 18,
+    },
+    formRow: {
+      marginBottom: 12,
+    },
+    formLabel: {
+      color: palette.textSecondary || '#64748B',
+      fontSize: 12,
+      marginBottom: 6,
+      textTransform: 'uppercase',
+    },
+    input: {
+      backgroundColor: palette.surface || '#F8FAFC',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 14,
+      borderWidth: 1,
+      color: palette.text || '#0F172A',
+      fontSize: 14,
+      minHeight: 48,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+    },
+    textArea: {
+      minHeight: 110,
+      textAlignVertical: 'top',
+    },
+    formGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginHorizontal: -6,
+    },
+    formGridItem: {
+      paddingHorizontal: 6,
+      width: '50%',
+      marginBottom: 12,
+    },
+    switchRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    actionRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 8,
+    },
+    primaryButton: {
+      alignItems: 'center',
+      backgroundColor: palette.primary || '#2563EB',
+      borderColor: palette.primary || '#2563EB',
+      borderRadius: 14,
+      borderWidth: 1,
+      marginRight: 8,
+      marginBottom: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+    },
+    primaryButtonText: {
+      color: palette.buttonText || '#FFFFFF',
+      fontSize: 14,
+      fontWeight: '700',
+    },
+    secondaryButton: {
+      alignItems: 'center',
+      backgroundColor: palette.cardBackground || '#FFFFFF',
+      borderColor: palette.border || '#E2E8F0',
+      borderRadius: 14,
+      borderWidth: 1,
+      marginRight: 8,
+      marginBottom: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+    },
+    secondaryButtonText: {
+      color: palette.text || '#0F172A',
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    tableWrap: {
+      marginTop: 12,
+    },
+    emptyState: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 24,
+    },
+    emptyStateTitle: {
+      color: palette.text || '#0F172A',
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: 6,
+    },
+    emptyStateText: {
+      color: palette.textSecondary || '#64748B',
+      fontSize: 13,
+      lineHeight: 20,
+      textAlign: 'center',
+    },
+  });
