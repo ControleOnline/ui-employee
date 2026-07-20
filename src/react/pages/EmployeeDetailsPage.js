@@ -18,7 +18,7 @@ import {getPeopleDisplayName} from '@controleonline/ui-common/src/react/utils/pe
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
 import DefaultTable from '@controleonline/ui-default/src/react/components/table/DefaultTable';
-import DateShortcutFilter from '@controleonline/ui-default/src/react/components/filters/DateShortcutFilter';
+import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import {useStore} from '@store';
 import CategoryPickerField from '@controleonline/ui-employee/src/react/components/CategoryPickerField';
 import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
@@ -225,6 +225,21 @@ const EmployeeDetailsPage = () => {
     customRange: {from: '', to: ''},
     shortcut: '30d',
   });
+  const exportPeriodFilters = useMemo(
+    () => ({periodStart: exportPeriod}),
+    [exportPeriod],
+  );
+  const handleExportPeriodFiltersChange = useCallback(
+    nextFilters => {
+      setExportPeriod(
+        nextFilters?.periodStart || {
+          customRange: {from: '', to: ''},
+          shortcut: 'all',
+        },
+      );
+    },
+    [],
+  );
 
   const employeeProfile = Array.isArray(profiles) ? profiles[0] || null : null;
   const bootstrapReady = Boolean(currentCompany?.id) && Boolean(themeColors);
@@ -1034,26 +1049,11 @@ const EmployeeDetailsPage = () => {
               text="Gera historico com arquivo baixavel e salva o job no banco."
             />
 
-            <DateShortcutFilter
-              dense
-              field="periodStart"
-              labelCaption="Periodo"
-              store="people_export_jobs"
-              colors={brandColors}
-              value={exportPeriod.shortcut}
-              customRange={exportPeriod.customRange}
-              onChange={shortcut =>
-                setExportPeriod(current => ({
-                  ...current,
-                  shortcut,
-                }))
-              }
-              onCustomRangeChange={customRange =>
-                setExportPeriod(current => ({
-                  ...current,
-                  customRange,
-                }))
-              }
+            <DefaultExternalFilters
+              accentColor={brandColors.primary}
+              filters={exportPeriodFilters}
+              onChangeFilters={handleExportPeriodFiltersChange}
+              storeName="people_export_jobs"
             />
 
             <View style={styles.actionRow}>

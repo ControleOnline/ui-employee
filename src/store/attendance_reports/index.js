@@ -38,10 +38,12 @@ export default {
       },
       {
         editable: false,
+        externalFilter: true,
+        inputType: 'date-range',
         sortable: true,
         name: 'date',
         align: 'left',
-        label: 'Data',
+        label: 'Periodo do ponto',
         sortField: 'date',
         format: value => formatDateValue(value),
       },

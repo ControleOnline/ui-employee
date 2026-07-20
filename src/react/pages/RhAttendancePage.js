@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {Text, View} from 'react-native';
 import {useStore} from '@store';
-import DateShortcutFilter from '@controleonline/ui-default/src/react/components/filters/DateShortcutFilter';
+import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import RhTablePage from '@controleonline/ui-employee/src/react/pages/RhTablePage';
 import {
   buildEmployeeDetailRouteParams,
@@ -69,6 +69,21 @@ const RhAttendancePage = () => {
     customRange: {from: '', to: ''},
     shortcut: '30d',
   });
+  const attendancePeriodFilters = useMemo(
+    () => ({date: attendancePeriod}),
+    [attendancePeriod],
+  );
+  const handleAttendancePeriodFiltersChange = useCallback(
+    nextFilters => {
+      setAttendancePeriod(
+        nextFilters?.date || {
+          customRange: {from: '', to: ''},
+          shortcut: 'all',
+        },
+      );
+    },
+    [],
+  );
 
   const attendanceDateRange = useMemo(
     () =>
@@ -106,26 +121,11 @@ const RhAttendancePage = () => {
 
   const controls = (
     <View>
-      <DateShortcutFilter
-        dense
-        field="date"
-        labelCaption="Periodo do ponto"
-        store="attendance_reports"
-        colors={palette}
-        value={attendancePeriod.shortcut}
-        customRange={attendancePeriod.customRange}
-        onChange={shortcut =>
-          setAttendancePeriod(current => ({
-            ...current,
-            shortcut,
-          }))
-        }
-        onCustomRangeChange={customRange =>
-          setAttendancePeriod(current => ({
-            ...current,
-            customRange,
-          }))
-        }
+      <DefaultExternalFilters
+        accentColor={palette.primary}
+        filters={attendancePeriodFilters}
+        onChangeFilters={handleAttendancePeriodFiltersChange}
+        storeName="attendance_reports"
       />
       <Text style={styles.controlsText}>
         {`Recorte atual: ${formatContextLabel(context)}.`}

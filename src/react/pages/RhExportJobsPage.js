@@ -4,7 +4,7 @@ import {Linking, Text, View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import {useStore} from '@store';
 import {useMessage} from '@controleonline/ui-common/src/react/components/MessageService';
-import DateShortcutFilter from '@controleonline/ui-default/src/react/components/filters/DateShortcutFilter';
+import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
 import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
@@ -57,6 +57,21 @@ const RhExportJobsPage = () => {
     customRange: {from: '', to: ''},
     shortcut: '30d',
   });
+  const exportPeriodFilters = useMemo(
+    () => ({periodStart: exportPeriod}),
+    [exportPeriod],
+  );
+  const handleExportPeriodFiltersChange = useCallback(
+    nextFilters => {
+      setExportPeriod(
+        nextFilters?.periodStart || {
+          customRange: {from: '', to: ''},
+          shortcut: 'all',
+        },
+      );
+    },
+    [],
+  );
 
   const exportDateRange = useMemo(
     () =>
@@ -124,26 +139,11 @@ const RhExportJobsPage = () => {
 
   const controls = (
     <View>
-      <DateShortcutFilter
-        dense
-        field="periodStart"
-        labelCaption="Periodo da folha"
-        store="people_export_jobs"
-        colors={palette}
-        value={exportPeriod.shortcut}
-        customRange={exportPeriod.customRange}
-        onChange={shortcut =>
-          setExportPeriod(current => ({
-            ...current,
-            shortcut,
-          }))
-        }
-        onCustomRangeChange={customRange =>
-          setExportPeriod(current => ({
-            ...current,
-            customRange,
-          }))
-        }
+      <DefaultExternalFilters
+        accentColor={palette.primary}
+        filters={exportPeriodFilters}
+        onChangeFilters={handleExportPeriodFiltersChange}
+        storeName="people_export_jobs"
       />
       <Text style={styles.controlsText}>
         {`Recorte atual: ${formatContextLabel(context)}.`}

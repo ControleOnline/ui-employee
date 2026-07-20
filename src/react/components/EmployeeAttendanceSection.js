@@ -14,7 +14,7 @@ import {
 import * as DocumentPicker from 'expo-document-picker';
 import {useStore} from '@store';
 import {useMessage} from '@controleonline/ui-common/src/react/components/MessageService';
-import DateShortcutFilter from '@controleonline/ui-default/src/react/components/filters/DateShortcutFilter';
+import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import DefaultTable from '@controleonline/ui-default/src/react/components/table/DefaultTable';
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
@@ -84,6 +84,21 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
     customRange: {from: '', to: ''},
     shortcut: '30d',
   });
+  const attendancePeriodFilters = useMemo(
+    () => ({date: attendancePeriod}),
+    [attendancePeriod],
+  );
+  const handleAttendancePeriodFiltersChange = useCallback(
+    nextFilters => {
+      setAttendancePeriod(
+        nextFilters?.date || {
+          customRange: {from: '', to: ''},
+          shortcut: 'all',
+        },
+      );
+    },
+    [],
+  );
   const [absenceModalVisible, setAbsenceModalVisible] = useState(false);
   const [absenceDraft, setAbsenceDraft] = useState(() =>
     createDefaultDraft(employeeId, currentCompany?.id || resolvedCurrentCompany?.id, context),
@@ -366,26 +381,11 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
           Horarios de entrada e saida com destaque para atrasos, faltas e horas extras.
         </Text>
 
-        <DateShortcutFilter
-          dense
-          field="date"
-          labelCaption="Periodo do ponto"
-          store="attendance_reports"
-          colors={themeColors || undefined}
-          value={attendancePeriod.shortcut}
-          customRange={attendancePeriod.customRange}
-          onChange={shortcut =>
-            setAttendancePeriod(current => ({
-              ...current,
-              shortcut,
-            }))
-          }
-          onCustomRangeChange={customRange =>
-            setAttendancePeriod(current => ({
-              ...current,
-              customRange,
-            }))
-          }
+        <DefaultExternalFilters
+          accentColor={themeColors?.primary}
+          filters={attendancePeriodFilters}
+          onChangeFilters={handleAttendancePeriodFiltersChange}
+          storeName="attendance_reports"
         />
 
         <View style={styles.sectionChipRow}>
