@@ -11,14 +11,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
 import {useStore} from '@store';
 import {useMessage} from '@controleonline/ui-common/src/react/components/MessageService';
 import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import DefaultTable from '@controleonline/ui-default/src/react/components/table/DefaultTable';
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
-import {uploadFileToApi, toFileIri} from '@controleonline/ui-products/src/react/services/fileUpload';
+import DefaultUpload from '@controleonline/ui-default/src/react/components/upload/DefaultUpload';
+import {
+  extractFileId,
+  uploadFileToApi,
+  toFileIri,
+} from '@controleonline/ui-default/src/react/components/upload/fileUpload';
 import {buildEmploymentScopeRequestParams} from '@controleonline/ui-employee/src/shared/employeeNavigation';
 import {
   DEFAULT_EMPLOYEE_CONTEXT,
@@ -40,30 +44,6 @@ const createDefaultDraft = (employeeId = null, companyId = null, context = DEFAU
   justificationFileLabel: '',
   fileObject: null,
 });
-
-const pickFile = async () => {
-  if (Platform.OS === 'web' && typeof document !== 'undefined') {
-    return new Promise(resolve => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '*/*';
-      input.onchange = event => resolve(event?.target?.files?.[0] || null);
-      input.click();
-    });
-  }
-
-  const result = await DocumentPicker.getDocumentAsync({
-    type: '*/*',
-    copyToCacheDirectory: true,
-    multiple: false,
-  });
-
-  if (result.canceled) {
-    return null;
-  }
-
-  return result.assets?.[0] || null;
-};
 
 const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAULT_EMPLOYEE_CONTEXT, styles}) => {
   const {showError, showSuccess} = useMessage() || {};
@@ -211,22 +191,43 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
     setAbsenceModalVisible(true);
   }, [context, currentCompany?.id, employeeId, resolvedCurrentCompany?.id]);
 
-  const handlePickAbsenceFile = useCallback(async () => {
-    try {
-      const file = await pickFile();
-      if (!file) {
-        return;
-      }
-
-      setAbsenceDraft(currentDraft => ({
-        ...currentDraft,
-        fileObject: file,
-        justificationFileLabel: file?.name || file?.fileName || currentDraft.justificationFileLabel || '',
-      }));
-    } catch (error) {
-      showError?.(error?.message || 'Nao foi possivel selecionar o arquivo.');
+  const attachAbsenceFile = useCallback(async file => {
+    const fileIri = toFileIri(file);
+    if (!fileIri) {
+      throw new Error('Arquivo sem identificador.');
     }
-  }, [showError]);
+
+    setAbsenceDraft(currentDraft => ({
+      ...currentDraft,
+      fileObject: null,
+      justificationFile: fileIri,
+      justificationFileLabel: file?.name || file?.fileName || currentDraft.justificationFileLabel || '',
+    }));
+
+    return {file};
+  }, []);
+
+  const uploadAbsenceFile = useCallback(async ({file}) => {
+    const uploadedFile = await uploadFileToApi({
+      file,
+      context: 'people_absences',
+      peopleId: currentCompany?.id || resolvedCurrentCompany?.id,
+    });
+    const fileIri = toFileIri(uploadedFile);
+
+    if (!fileIri) {
+      throw new Error('Arquivo enviado sem identificador.');
+    }
+
+    setAbsenceDraft(currentDraft => ({
+      ...currentDraft,
+      fileObject: null,
+      justificationFile: fileIri,
+      justificationFileLabel: uploadedFile?.fileName || uploadedFile?.name || file?.name || currentDraft.justificationFileLabel || '',
+    }));
+
+    return uploadedFile;
+  }, [currentCompany?.id, resolvedCurrentCompany?.id]);
 
   const handleSaveAbsence = useCallback(async () => {
     const resolvedCompanyId = currentCompany?.id || resolvedCurrentCompany?.id;
@@ -244,15 +245,7 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
     try {
       setAbsenceSaving(true);
 
-      let justificationFileIri = normalizeText(absenceDraft.justificationFile);
-      if (absenceDraft.fileObject) {
-        const uploadedFile = await uploadFileToApi({
-          file: absenceDraft.fileObject,
-          context: 'people_absences',
-          peopleId: currentCompany.id,
-        });
-        justificationFileIri = toFileIri(uploadedFile) || justificationFileIri;
-      }
+      const justificationFileIri = normalizeText(absenceDraft.justificationFile);
 
       await absenceActions.save({
         ...(absenceDraft.id ? {id: absenceDraft.id} : {}),
@@ -282,7 +275,6 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
   }, [
     absenceActions,
     absenceDraft.absenceDate,
-    absenceDraft.fileObject,
     absenceDraft.id,
     absenceDraft.justificationFile,
     absenceDraft.reason,
@@ -514,17 +506,59 @@ const EmployeeAttendanceSection = ({employeeId, currentCompany, context = DEFAUL
 
               <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Atestado ou justificativa</Text>
-                <TouchableOpacity
-                  accessibilityRole="button"
-                  accessibilityLabel="Selecionar arquivo"
-                  activeOpacity={0.88}
-                  style={styles.secondaryButton}
-                  onPress={handlePickAbsenceFile}
-                >
-                  <Text style={styles.secondaryButtonText}>
-                    {absenceDraft.fileObject ? 'Trocar arquivo' : 'Selecionar arquivo'}
-                  </Text>
-                </TouchableOpacity>
+                <DefaultUpload
+                  relationStoreName="attendance_reports"
+                  relationField="peopleAbsence"
+                  relationResource="people_absences"
+                  entityId={absenceDraft.id || 'absence'}
+                  companyId={currentCompany?.id || resolvedCurrentCompany?.id}
+                  context="people_absences"
+                  libraryContexts={['people_absences']}
+                  attachments={absenceDraft.justificationFile ? [{
+                    id: extractFileId(absenceDraft.justificationFile),
+                    file: {
+                      id: extractFileId(absenceDraft.justificationFile),
+                      fileName: absenceDraft.justificationFileLabel || 'Justificativa',
+                    },
+                  }] : []}
+                  acceptedTypes="*/*"
+                  fileType=""
+                  fileTypeLabel="arquivo"
+                  title="Atestado ou justificativa"
+                  triggerLabel={absenceDraft.justificationFile ? 'Trocar arquivo' : 'Selecionar arquivo'}
+                  managerTitle="Gerenciador de justificativas"
+                  searchPlaceholder="Buscar arquivo"
+                  uploadButtonLabel="Enviar novo"
+                  emptyAttachmentLabel="Nenhum arquivo selecionado."
+                  emptyLibraryLabel="Nenhum arquivo encontrado."
+                  showInlineContent={false}
+                  uploadResultAlreadyAttached
+                  requireEntity={false}
+                  onAttachFile={attachAbsenceFile}
+                  onUploadFile={uploadAbsenceFile}
+                  onRemoveAttachment={async () => {
+                    setAbsenceDraft(currentDraft => ({
+                      ...currentDraft,
+                      justificationFile: '',
+                      justificationFileLabel: '',
+                      fileObject: null,
+                    }));
+                  }}
+                  renderTrigger={({openManager, uploading}) => (
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel="Selecionar arquivo"
+                      activeOpacity={0.88}
+                      style={styles.secondaryButton}
+                      onPress={openManager}
+                      disabled={uploading}
+                    >
+                      <Text style={styles.secondaryButtonText}>
+                        {uploading ? 'Enviando...' : absenceDraft.justificationFile ? 'Trocar arquivo' : 'Selecionar arquivo'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                />
                 <Text style={styles.sectionText}>
                   {absenceDraft.justificationFileLabel || 'Nenhum arquivo selecionado.'}
                 </Text>
