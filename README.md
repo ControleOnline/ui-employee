@@ -18,3 +18,10 @@ Module for the RH area of ControleOnline.
 - Employee profile with job title, function, department and LinkedIn snapshot.
 - Generic movement, schedule and export history lists scoped by `context`.
 - Employment contracts filtered by the `employment` context.
+
+## Links obrigatorios
+
+- [Documentacao para clientes](http://ajuda.controleonline.com/)
+- [Site institucional](http://controleonline.com/)
+- [Wiki tecnica](https://github.com/ControleOnline/ui-employee/wiki)
+
