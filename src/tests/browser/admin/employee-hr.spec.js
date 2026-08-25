@@ -594,7 +594,7 @@ test.describe('admin employee smoke', () => {
 
     await page.getByRole('button', {name: 'Exportacao'}).click();
     await expect(page.getByRole('button', {name: 'Gerar folha'})).toBeVisible();
-    await expect(page.getByText('Periodo', {exact: true}).first()).toBeVisible();
+    await expect(page.getByText(/PERIODO DA FOLHA/i).first()).toBeVisible();
 
     expect(requestCounts.get('menus-people') || 0).toBeGreaterThanOrEqual(1);
     expect(requestCounts.get('orders') || 0).toBe(0);
