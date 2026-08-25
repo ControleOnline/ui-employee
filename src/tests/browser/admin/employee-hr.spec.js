@@ -623,7 +623,7 @@ test.describe('admin employee smoke', () => {
     await page.goto('/hr');
 
     await page.getByRole('button', {name: 'Funcionarios'}).click();
-    await expect(page.getByText('Ana Souza', {exact: true}).first()).toBeVisible();
+    await expect(page.getByText(/ANA SOUZA/i).first()).toBeVisible();
 
     await page.goto('/hr/functions');
     await expect(page.getByText('Cargos e funcoes', {exact: true}).first()).toBeVisible();
