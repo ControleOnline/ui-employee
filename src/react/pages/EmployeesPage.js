@@ -1,3 +1,4 @@
+// fluxo: funcionario-cadastro | etapa: employees-page | wiki: https://github.com/ControleOnline/app-community/wiki/Venda-Producao
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import People from '@controleonline/ui-people/src/react/pages/People';
