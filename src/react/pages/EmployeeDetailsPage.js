@@ -1,3 +1,4 @@
+// fluxo: funcionario-cadastro | etapa: employee-details | wiki: https://github.com/ControleOnline/app-community/wiki/Venda-Producao
 /* eslint-disable no-unused-vars */
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import {

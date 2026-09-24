@@ -1,3 +1,4 @@
+// fluxo: funcionario-cadastro | etapa: hr-routes | wiki: https://github.com/ControleOnline/app-community/wiki/Venda-Producao
 import React from 'react';
 import EmployeesPage from '@controleonline/ui-employee/src/react/pages/EmployeesPage';
 import EmployeeDetailsPage from '@controleonline/ui-employee/src/react/pages/EmployeeDetailsPage';

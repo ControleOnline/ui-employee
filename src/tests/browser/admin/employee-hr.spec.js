@@ -1,3 +1,4 @@
+// fluxo: funcionario-cadastro | etapa: hr-employee-crud | wiki: https://github.com/ControleOnline/app-community/wiki/Venda-Producao
 const {expect, test} = require('playwright/test');
 const packageJson = require('../../../../../../../package.json');
 const {API_ORIGIN} = require('../../../../../../../src/tests/browser/apiOrigin');
@@ -594,7 +595,7 @@ test.describe('admin employee smoke', () => {
 
     await page.getByRole('button', {name: 'Exportacao'}).click();
     await expect(page.getByRole('button', {name: 'Gerar folha'})).toBeVisible();
-    await expect(page.getByText(/Per[ií]odo/i).first()).toBeVisible();
+    await expect(page.getByText('Periodo', {exact: true}).first()).toBeVisible();
 
     expect(requestCounts.get('menus-people') || 0).toBeGreaterThanOrEqual(1);
     expect(requestCounts.get('orders') || 0).toBe(0);
@@ -645,7 +646,7 @@ test.describe('admin employee smoke', () => {
     await expect(page.getByText('Folha de ponto', {exact: true}).first()).toBeVisible();
     await expect(page.getByRole('button', {name: 'Gerar folha'})).toBeVisible();
     await expect(page.getByText('folha-rh-2026-07.pdf', {exact: true}).first()).toBeVisible();
-    await expect(page.getByText(/Per[ií]odo da folha/i).first()).toBeVisible();
+    await expect(page.getByText('Periodo da folha', {exact: true}).first()).toBeVisible();
 
     expect(requestCounts.get('menus-people') || 0).toBeGreaterThanOrEqual(1);
     expect(requestCounts.get('orders') || 0).toBe(0);
