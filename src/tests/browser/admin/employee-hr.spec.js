@@ -1,3 +1,4 @@
+// fluxo: funcionario-cadastro | etapa: hr-employee-crud | wiki: https://github.com/ControleOnline/app-community/wiki/Venda-Producao
 const {expect, test} = require('playwright/test');
 const packageJson = require('../../../../../../../package.json');
 const {API_ORIGIN} = require('../../../../../../../src/tests/browser/apiOrigin');
