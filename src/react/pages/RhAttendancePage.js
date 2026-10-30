@@ -15,8 +15,8 @@ import {
   normalizeDateRange,
 } from '@controleonline/ui-employee/src/shared/employeeFormats';
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
-import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
-import {colors} from '@controleonline/../../src/styles/colors';
+import {resolveThemePalette} from '@controleonline/ui-layout/src/styles/branding';
+import {colors} from '@controleonline/ui-layout/src/styles/colors';
 import {createStyles} from './RhWorkspace.styles';
 
 const TONE_STYLES = {

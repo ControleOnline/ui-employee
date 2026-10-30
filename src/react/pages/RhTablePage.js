@@ -5,8 +5,8 @@ import {Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import DefaultTable from '@controleonline/ui-default/src/react/components/table/DefaultTable';
 import {useStore} from '@store';
-import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
-import {colors} from '@controleonline/../../src/styles/colors';
+import {resolveThemePalette} from '@controleonline/ui-layout/src/styles/branding';
+import {colors} from '@controleonline/ui-layout/src/styles/colors';
 import {resolvePeopleLabel} from '@controleonline/ui-employee/src/shared/employeeFormats';
 import {createStyles} from './RhWorkspace.styles';
 
