@@ -14,6 +14,10 @@ const buildEmployeesContext = routeParams => ({
   defaultContext: DEFAULT_EMPLOYEE_CONTEXT,
   selectedContext: DEFAULT_EMPLOYEE_CONTEXT,
   defaultPeopleType: 'F',
+  // Collaborators = PF people linked to the currentCompany (PJ) via peopleLink,
+  // regardless of link type. Handled by ui-people buildPeopleLinkRequestParams.
+  peopleType: 'F',
+  anyLinkType: true,
   title: routeParams?.title || global.t?.t('people', 'label', 'employee') || 'Funcionarios',
   searchPlaceholder:
     routeParams?.searchPlaceholder ||
