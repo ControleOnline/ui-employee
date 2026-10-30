@@ -7,8 +7,8 @@ import {useMessage} from '@controleonline/ui-common/src/react/components/Message
 import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import {getDateRange} from '@controleonline/ui-common/src/react/utils/dateRangeFilter';
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
-import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
-import {colors} from '@controleonline/../../src/styles/colors';
+import {resolveThemePalette} from '@controleonline/ui-layout/src/styles/branding';
+import {colors} from '@controleonline/ui-layout/src/styles/colors';
 import {
   buildEmploymentExportRequestParams,
 } from '@controleonline/ui-employee/src/shared/employeeNavigation';

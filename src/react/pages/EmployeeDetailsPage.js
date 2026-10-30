@@ -22,8 +22,8 @@ import DefaultTable from '@controleonline/ui-default/src/react/components/table/
 import DefaultExternalFilters from '@controleonline/ui-default/src/react/components/filters/DefaultExternalFilters';
 import {useStore} from '@store';
 import CategoryPickerField from '@controleonline/ui-employee/src/react/components/CategoryPickerField';
-import {resolveThemePalette} from '@controleonline/../../src/styles/branding';
-import {colors} from '@controleonline/../../src/styles/colors';
+import {resolveThemePalette} from '@controleonline/ui-layout/src/styles/branding';
+import {colors} from '@controleonline/ui-layout/src/styles/colors';
 import EmployeeAttendanceSection from '@controleonline/ui-employee/src/react/components/EmployeeAttendanceSection';
 import {
   EMPLOYEE_CATEGORY_CONTEXTS,
