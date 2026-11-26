@@ -1,6 +1,6 @@
 {
   "name": "@controleonline/ui-employee",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "author": "ControleOnline",
   "description": "ControleOnline employee Quasar UI Component",
   "license": "MIT",
@@ -8,7 +8,7 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/controleonline/conline-quasar-ui"
+    "url": "https://github.com/ControleOnline/ui-employee"
   },
   "bugs": "",
   "homepage": "https://www.controleonline.com/devs/plugins",
